@@ -11,41 +11,33 @@
   <DisplayName DefaultValue="HIN Verschlüsselung"/>
   <Description DefaultValue="Fragt beim Senden, ob HIN-Verschlüsselung angewendet werden soll."/>
 
-  <!-- Legacy-Icons für ältere Clients -->
   <IconUrl DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon32.png"/>
   <HighResolutionIconUrl DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon80.png"/>
-
   <SupportUrl DefaultValue="https://www.sonnenberg-baar.ch/"/>
 
   <AppDomains>
     <AppDomain>cdn.jsdelivr.net</AppDomain>
+    <AppDomain>appsforoffice.microsoft.com</AppDomain>
   </AppDomains>
 
   <Hosts>
     <Host Name="Mailbox"/>
   </Hosts>
 
-  <!-- Anforderungssatz für das Add-In -->
+  <!-- Mindest-Anforderungssatz für OnMessageSend -->
   <Requirements>
     <Sets>
-      <Set Name="Mailbox" MinVersion="1.15"/>
+      <Set Name="Mailbox" MinVersion="1.8"/>
     </Sets>
   </Requirements>
 
   <Permissions>ReadWriteItem</Permissions>
 
-  <!-- optional; nicht zwingend für LaunchEvent -->
-  <Rule xsi:type="RuleCollection" Mode="Or">
-    <Rule xsi:type="ItemIs" ItemType="Message" FormType="ReadOrCompose"/>
-  </Rule>
-
-  <!-- Event-basierte und UI-Erweiterungen -->
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1"
                     xsi:type="VersionOverridesV1_1">
 
-    <!-- Requirements innerhalb von VersionOverrides: KEIN bt:-Präfix -->
     <Requirements>
-      <Sets DefaultMinVersion="1.15">
+      <Sets DefaultMinVersion="1.8">
         <Set Name="Mailbox"/>
       </Sets>
     </Requirements>
@@ -62,7 +54,7 @@
 
         <DesktopFormFactor>
 
-          <!-- OnMessageSend -->
+          <!-- OnMessageSend-Event -->
           <ExtensionPoint xsi:type="LaunchEvent">
             <LaunchEvents>
               <LaunchEvent Type="OnMessageSend"
@@ -72,7 +64,7 @@
             <SourceLocation resid="WebViewRuntime.Url"/>
           </ExtensionPoint>
 
-          <!-- Button im Compose-Fenster -->
+          <!-- Optionaler Button im Compose-Fenster -->
           <ExtensionPoint xsi:type="MessageComposeCommandSurface">
             <OfficeTab id="TabDefault">
               <Group id="msgComposeCmdGroup">
@@ -102,14 +94,12 @@
         <bt:Image id="icon32" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon32.png"/>
         <bt:Image id="icon80" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon80.png"/>
       </bt:Images>
-
       <bt:Urls>
-        <!-- HTML als WebView/FunctionFile -->
+        <!-- HTML (WebView) -->
         <bt:Url id="WebViewRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/encrypt-dialog.aspx"/>
-        <!-- Dein JavaScript mit Office.actions -->
+        <!-- Dein JavaScript -->
         <bt:Url id="JSRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/on-send-event.js"/>
       </bt:Urls>
-
       <bt:ShortStrings>
         <bt:String id="groupLabel" DefaultValue="Verschlüsselung"/>
         <bt:String id="encryptButtonLabel" DefaultValue="HIN verschlüsseln"/>
