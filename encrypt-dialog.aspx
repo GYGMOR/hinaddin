@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<!--
+  Dieses Dialogfenster wird von der JavaScript‑Funktion onMessageSendHandler
+  geöffnet. Es informiert den Benutzer darüber, dass sensible Daten
+  verarbeitet werden, und bietet die Möglichkeit, die E‑Mail entweder
+  unverschlüsselt zu senden, mit HIN zu verschlüsseln oder den Vorgang
+  abzubrechen.  Nach der Auswahl wird über messageParent eine Nachricht an
+  das Add‑In zurückgesendet.   
+-->
+<head>
+  <meta charset="utf-8" />
+  <title>HIN‑Verschlüsselung</title>
+  <!-- Office.js ist notwendig, um mit dem Host zu kommunizieren. -->
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    .content {
+      text-align: center;
+    }
+    .title {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin-bottom: 20px;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+    }
+    button {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    /* Primärer Button für verschlüsseltes Senden */
+    .primary {
+      background-color: #0078d4;
+      color: #ffffff;
+    }
+    /* Sekundärer Button für normales Senden */
+    .secondary {
+      background-color: #f3f2f1;
+      color: #323130;
+    }
+    /* Danger Button für Abbrechen */
+    .danger {
+      background-color: #d83b01;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="title">Verschlüsselung auswählen</div>
+    <div class="message">
+      Sie arbeiten mit sensiblen Daten.<br />
+      Möchten Sie diese E‑Mail verschlüsseln?
+    </div>
+    <div class="buttons">
+      <button class="primary" id="encrypt">Verschlüsselt senden</button>
+      <button class="secondary" id="normal">Ohne Verschlüsselung senden</button>
+      <button class="danger" id="cancel">Abbrechen</button>
+    </div>
+  </div>
+
+  <script>
+    // Warten, bis Office vollständig geladen ist.
+    Office.onReady(function () {
+      document.getElementById("encrypt").addEventListener("click", function () {
+        Office.context.ui.messageParent("encrypt");
+      });
+      document.getElementById("normal").addEventListener("click", function () {
+        Office.context.ui.messageParent("normal");
+      });
+      document.getElementById("cancel").addEventListener("click", function () {
+        Office.context.ui.messageParent("cancel");
+      });
+    });
+  </script>
+</body>
+</html>
