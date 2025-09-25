@@ -96,7 +96,7 @@
       </bt:Images>
       <bt:Urls>
         <!-- HTML (WebView) -->
-        <bt:Url id="WebViewRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/encrypt-dialog.aspx"/>
+        <bt:Url id="WebViewRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/encrypt-dialog.html"/>
         <!-- Dein JavaScript -->
         <bt:Url id="JSRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/on-send-event.js"/>
       </bt:Urls>
