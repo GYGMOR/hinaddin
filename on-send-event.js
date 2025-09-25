@@ -1,99 +1,66 @@
-/*
- * Event-Handler für Smart Alerts in Outlook.
- *
- * Dieses Skript registriert einen Handler für den `OnMessageSend`-Event
- * und öffnet ein eigenes Dialogfenster mit drei Optionen: normal senden,
- * verschlüsselt senden oder Abbrechen. Je nach Auswahl wird die E-Mail
- * entweder normal versendet, der Betreff mit einem HIN-Marker versehen
- * oder das Senden abgebrochen.
- */
+// Lädt office.js über die HTML-Runtime (encrypt-dialog.html) – hier nur Logik.
+// WICHTIG: Handler müssen global (window) sein.
 
-(() => {
-  /**
-   * Registriert die Funktionen, sobald Office bereit ist.
-   */
+(function () {
   Office.onReady(() => {
-  Office.actions.associate("onMessageSendHandler", async (event) => {
-    // deine Logik ...
-    event.completed({ allowEvent: true });
+    // Globale Zuordnung der Handler-Namen aus dem Manifest
+    Office.actions.associate("onMessageSendHandler", window.onMessageSendHandler);
+    Office.actions.associate("encryptSendFunction", window.encryptSendFunction);
   });
-  Office.actions.associate("encryptSendFunction", async (event) => {
-    // deine Button-Logik ...
+
+  // Button-Funktion (optional)
+  window.encryptSendFunction = async (event) => {
+    // Hier könntest du z. B. auch das Dialogfenster öffnen
     event.completed();
-  });
-});
+  };
 
-
-  /**
-   * Handler für den OnMessageSend-Event.
-   * Wird aufgerufen, wenn der Benutzer in Outlook auf „Senden“ klickt.
-   * Öffnet ein Dialogfenster mit Optionen und gibt das Ergebnis an Outlook zurück.
-   *
-   * @param {Office.AddinCommands.Event} event Das Ereignisobjekt, über das der
-   *    Sendvorgang zugelassen oder blockiert werden kann.
-   */
-  function onMessageSendHandler(event) {
+  // OnMessageSend-Handler
+  window.onMessageSendHandler = function (event) {
     try {
-      // Ermittelt die Basis-URL des Add-Ins. Entspricht der URL der Manifestdatei.
-      const baseUrl =
-        Office.context.extensionBaseUri ||
-        (Office.context.mailbox && Office.context.mailbox.item && Office.context.mailbox.item.addIns
-          ? Office.context.mailbox.item.addIns.extensionBaseUri
-          : "");
-      // Definiert die Dialog-URL relativ zur Basis-URL.
-      // Verwenden Sie die ASPX-Datei des Dialogs im GitHub-Repository.
-      const dialogUrl = `${baseUrl}/encrypt-dialog.aspx`;
-      // Öffnet das Dialogfenster. Höhe und Breite sind Prozentsätze der Bildschirmgröße.
+      // **FESTE absolute URL** zur Dialogseite auf dem CDN
+      const dialogUrl = "https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/encrypt-dialog.html";
+
       Office.context.ui.displayDialogAsync(
         dialogUrl,
         { height: 45, width: 30, requireHTTPS: true },
         (asyncResult) => {
-          if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
-            const dialog = asyncResult.value;
-            // Handler für Nachrichten aus dem Dialogfenster.
-            dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
-              const choice = args.message;
-              // Schließt das Dialogfenster.
-              dialog.close();
-              switch (choice) {
-                case "cancel":
-                  // Abbruch – Senden blockieren.
-                  event.completed({ allowEvent: false });
-                  break;
-                case "normal":
-                  // Normal senden – Senden zulassen.
-                  event.completed({ allowEvent: true });
-                  break;
-                case "encrypt":
-                  // Verschlüsselt senden – Betreff mit HIN-Marker versehen.
-                  const item = Office.context.mailbox.item;
-                  item.subject.getAsync((getResult) => {
-                    let currentSubject = "";
-                    if (getResult.status === Office.AsyncResultStatus.Succeeded) {
-                      currentSubject = getResult.value || "";
-                    }
-                    const newSubject = `[HIN] ${currentSubject}`;
-                    item.subject.setAsync(newSubject, () => {
-                      // Unabhängig vom Ergebnis das Senden zulassen.
-                      event.completed({ allowEvent: true });
-                    });
-                  });
-                  break;
-                default:
-                  // Unbekannte Option – zur Sicherheit senden zulassen.
-                  event.completed({ allowEvent: true });
-                  break;
-              }
-            });
-          } else {
-            // Fehler beim Öffnen des Dialogs – E-Mail normal senden lassen.
+          if (asyncResult.status !== Office.AsyncResultStatus.Succeeded) {
+            // Wenn der Dialog nicht öffnet, Senden erlauben
             event.completed({ allowEvent: true });
+            return;
           }
+
+          const dialog = asyncResult.value;
+          dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
+            const choice = args.message;
+            dialog.close();
+
+            switch (choice) {
+              case "cancel":
+                event.completed({ allowEvent: false }); // Senden blockieren
+                break;
+
+              case "encrypt": {
+                const item = Office.context.mailbox.item;
+                item.subject.getAsync((res) => {
+                  const current = (res.status === Office.AsyncResultStatus.Succeeded && res.value) ? res.value : "";
+                  item.subject.setAsync(`[HIN] ${current}`, () => {
+                    event.completed({ allowEvent: true });
+                  });
+                });
+                break;
+              }
+
+              case "normal":
+              default:
+                event.completed({ allowEvent: true });
+                break;
+            }
+          });
         }
       );
-    } catch (error) {
-      // Bei unerwarteten Fehlern das Senden zulassen.
+    } catch (e) {
       event.completed({ allowEvent: true });
     }
-  }
+  };
 })();
