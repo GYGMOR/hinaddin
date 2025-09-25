@@ -13,10 +13,16 @@
    * Registriert die Funktionen, sobald Office bereit ist.
    */
   Office.onReady(() => {
-    // Funktionsnamen aus der Manifestdatei mit Implementierungen verknüpfen.
-    Office.actions.associate("onMessageSendHandler", onMessageSendHandler);
-    Office.actions.associate("encryptSendFunction", onMessageSendHandler);
+  Office.actions.associate("onMessageSendHandler", async (event) => {
+    // deine Logik ...
+    event.completed({ allowEvent: true });
   });
+  Office.actions.associate("encryptSendFunction", async (event) => {
+    // deine Button-Logik ...
+    event.completed();
+  });
+});
+
 
   /**
    * Handler für den OnMessageSend-Event.
