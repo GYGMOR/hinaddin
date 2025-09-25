@@ -24,7 +24,6 @@
     <Host Name="Mailbox"/>
   </Hosts>
 
-  <!-- Mindest-Anforderungssatz für OnMessageSend -->
   <Requirements>
     <Sets>
       <Set Name="Mailbox" MinVersion="1.8"/>
@@ -45,7 +44,6 @@
     <Hosts>
       <Host xsi:type="MailHost">
 
-        <!-- Gemeinsame Runtime: HTML lädt office.js + dein JS -->
         <Runtimes>
           <Runtime resid="WebViewRuntime.Url">
             <Override type="javascript" resid="JSRuntime.Url"/>
@@ -54,7 +52,6 @@
 
         <DesktopFormFactor>
 
-          <!-- OnMessageSend-Event -->
           <ExtensionPoint xsi:type="LaunchEvent">
             <LaunchEvents>
               <LaunchEvent Type="OnMessageSend"
@@ -64,7 +61,6 @@
             <SourceLocation resid="WebViewRuntime.Url"/>
           </ExtensionPoint>
 
-          <!-- Optionaler Button im Compose-Fenster -->
           <ExtensionPoint xsi:type="MessageComposeCommandSurface">
             <OfficeTab id="TabDefault">
               <Group id="msgComposeCmdGroup">
@@ -95,9 +91,7 @@
         <bt:Image id="icon80" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon80.png"/>
       </bt:Images>
       <bt:Urls>
-        <!-- HTML (WebView) -->
         <bt:Url id="WebViewRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/encrypt-dialog.html"/>
-        <!-- Dein JavaScript -->
         <bt:Url id="JSRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/on-send-event.js"/>
       </bt:Urls>
       <bt:ShortStrings>
