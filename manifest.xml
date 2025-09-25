@@ -2,7 +2,6 @@
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
-           xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.1"
            xsi:type="MailApp">
 
   <Id>66f982c5-0a74-4f6f-9999-123456789abc</Id>
@@ -25,7 +24,6 @@
     <Host Name="Mailbox"/>
   </Hosts>
 
-  <!-- Mindestanforderung für OnMessageSend -->
   <Requirements>
     <Sets>
       <Set Name="Mailbox" MinVersion="1.8"/>
@@ -34,77 +32,49 @@
 
   <Permissions>ReadWriteItem</Permissions>
 
-  <!-- WICHTIG: Prefix 'mailappor:' verwenden -->
-  <VersionOverrides xsi:type="mailappor:VersionOverridesV1_1">
+  <!-- WICHTIG: Default-Namespace der VersionOverrides verwenden -->
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1"
+                    xsi:type="VersionOverridesV1_1">
 
-    <mailappor:Requirements>
-      <mailappor:Sets DefaultMinVersion="1.8">
-        <mailappor:Set Name="Mailbox"/>
-      </mailappor:Sets>
-    </mailappor:Requirements>
+    <Requirements>
+      <Sets DefaultMinVersion="1.8">
+        <Set Name="Mailbox"/>
+      </Sets>
+    </Requirements>
 
-    <mailappor:Hosts>
-      <mailappor:Host xsi:type="mailappor:MailHost">
+    <Hosts>
+      <Host xsi:type="MailHost">
 
-        <mailappor:DesktopFormFactor>
+        <!-- Gemeinsame Runtime -->
+        <Runtimes>
+          <Runtime resid="WebViewRuntime.Url">
+            <Override type="javascript" resid="JSRuntime.Url"/>
+          </Runtime>
+        </Runtimes>
 
-          <!-- Event-basiert: OnMessageSend -->
-          <mailappor:ExtensionPoint xsi:type="mailappor:LaunchEvent">
-            <mailappor:LaunchEvents>
-              <mailappor:LaunchEvent Type="OnMessageSend"
-                                     FunctionName="onMessageSendHandler"
-                                     SendMode="PromptUser"/>
-            </mailappor:LaunchEvents>
-            <mailappor:SourceLocation resid="WebViewRuntime.Url"/>
-          </mailappor:ExtensionPoint>
+        <DesktopFormFactor>
+
+          <!-- OnMessageSend -->
+          <ExtensionPoint xsi:type="LaunchEvent">
+            <LaunchEvents>
+              <LaunchEvent Type="OnMessageSend"
+                           FunctionName="onMessageSendHandler"
+                           SendMode="PromptUser"/>
+            </LaunchEvents>
+            <SourceLocation resid="WebViewRuntime.Url"/>
+          </ExtensionPoint>
 
           <!-- Optionaler Button -->
-          <mailappor:ExtensionPoint xsi:type="mailappor:MessageComposeCommandSurface">
-            <mailappor:OfficeTab id="TabDefault">
-              <mailappor:Group id="msgComposeCmdGroup">
-                <mailappor:Label resid="groupLabel"/>
-                <mailappor:Control xsi:type="mailappor:Button" id="encryptButton">
-                  <mailappor:Label resid="encryptButtonLabel"/>
-                  <mailappor:Icon>
+          <ExtensionPoint xsi:type="MessageComposeCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="msgComposeCmdGroup">
+                <Label resid="groupLabel"/>
+                <Control xsi:type="Button" id="encryptButton">
+                  <Label resid="encryptButtonLabel"/>
+                  <Icon>
                     <bt:Image size="16" resid="icon16"/>
                     <bt:Image size="32" resid="icon32"/>
                     <bt:Image size="80" resid="icon80"/>
-                  </mailappor:Icon>
-                  <mailappor:Action xsi:type="mailappor:ExecuteFunction">
-                    <mailappor:FunctionName>encryptSendFunction</mailappor:FunctionName>
-                  </mailappor:Action>
-                </mailappor:Control>
-              </mailappor:Group>
-            </mailappor:OfficeTab>
-          </mailappor:ExtensionPoint>
-
-        </mailappor:DesktopFormFactor>
-
-        <!-- Gemeinsame Runtime (HTML lädt office.js + dein JS) -->
-        <mailappor:Runtimes>
-          <mailappor:Runtime resid="WebViewRuntime.Url">
-            <Override type="javascript" resid="JSRuntime.Url"/>
-          </mailappor:Runtime>
-        </mailappor:Runtimes>
-
-      </mailappor:Host>
-    </mailappor:Hosts>
-
-    <mailappor:Resources>
-      <bt:Images>
-        <bt:Image id="icon16" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon16.png"/>
-        <bt:Image id="icon32" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon32.png"/>
-        <bt:Image id="icon80" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/icon80.png"/>
-      </bt:Images>
-      <bt:Urls>
-        <bt:Url id="WebViewRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/encrypt-dialog.html"/>
-        <bt:Url id="JSRuntime.Url" DefaultValue="https://cdn.jsdelivr.net/gh/GYGMOR/hinaddin@main/on-send-event.js"/>
-      </bt:Urls>
-      <bt:ShortStrings>
-        <bt:String id="groupLabel" DefaultValue="Verschlüsselung"/>
-        <bt:String id="encryptButtonLabel" DefaultValue="HIN verschlüsseln"/>
-      </bt:ShortStrings>
-    </mailappor:Resources>
-
-  </VersionOverrides>
-</OfficeApp>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>encryptSendFunction</Functi
